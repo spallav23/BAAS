@@ -26,6 +26,18 @@ export const createCluster = createAsyncThunk(
   }
 )
 
+export const updateCluster = createAsyncThunk(
+  'clusters/updateCluster',
+  async ({ clusterId, data }, { rejectWithValue }) => {
+    try {
+      const response = await clusterAPI.updateCluster(clusterId, data)
+      return response.data.cluster
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.error || 'Failed to update cluster')
+    }
+  }
+)
+
 export const deleteCluster = createAsyncThunk(
   'clusters/deleteCluster',
   async (clusterId, { rejectWithValue }) => {
@@ -81,6 +93,27 @@ const clusterSlice = createSlice({
         state.clusters.push(action.payload)
       })
       .addCase(createCluster.rejected, (state, action) => {
+        state.isLoading = false
+        state.error = action.payload
+      })
+      // Update Cluster
+      .addCase(updateCluster.pending, (state) => {
+        state.isLoading = true
+        state.error = null
+      })
+      .addCase(updateCluster.fulfilled, (state, action) => {
+        state.isLoading = false
+        const index = state.clusters.findIndex(
+          (c) => c.id === action.payload.id
+        )
+        if (index !== -1) {
+          state.clusters[index] = action.payload
+        }
+        if (state.selectedCluster?.id === action.payload.id) {
+          state.selectedCluster = action.payload
+        }
+      })
+      .addCase(updateCluster.rejected, (state, action) => {
         state.isLoading = false
         state.error = action.payload
       })

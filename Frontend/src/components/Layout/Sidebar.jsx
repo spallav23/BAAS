@@ -1,18 +1,23 @@
 import { NavLink, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSelector, useDispatch } from 'react-redux'
+import { useState, useEffect } from 'react'
 import {
   FiHome,
   FiDatabase,
   FiServer,
   FiX,
   FiChevronRight,
+  FiBook,
+  FiUser,
 } from 'react-icons/fi'
 import { setSidebarOpen } from '../../store/slices/uiSlice'
 
 const menuItems = [
   { path: '/dashboard', icon: FiHome, label: 'Dashboard' },
   { path: '/clusters', icon: FiDatabase, label: 'Clusters' },
+  { path: '/documents', icon: FiBook, label: 'Documents' },
+  { path: '/profile', icon: FiUser, label: 'Profile' },
   { path: '/storage', icon: FiServer, label: 'Storage', comingSoon: true },
 ]
 
@@ -20,9 +25,34 @@ const Sidebar = () => {
   const dispatch = useDispatch()
   const location = useLocation()
   const { sidebarOpen } = useSelector((state) => state.ui)
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024)
+
+  useEffect(() => {
+    const handleResize = () => {
+      const desktop = window.innerWidth >= 1024
+      setIsDesktop(desktop)
+      // On desktop, always keep sidebar open
+      if (desktop) {
+        dispatch(setSidebarOpen(true))
+      }
+    }
+
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [dispatch])
 
   const closeSidebar = () => {
-    dispatch(setSidebarOpen(false))
+    if (!isDesktop) {
+      dispatch(setSidebarOpen(false))
+    }
+  }
+
+  // Close sidebar when clicking nav link on mobile
+  const handleNavClick = () => {
+    if (!isDesktop) {
+      dispatch(setSidebarOpen(false))
+    }
   }
 
   return (
@@ -44,10 +74,10 @@ const Sidebar = () => {
       <motion.aside
         initial={false}
         animate={{
-          x: sidebarOpen ? 0 : '-100%',
+          x: isDesktop ? 0 : sidebarOpen ? 0 : '-100%',
         }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className="fixed left-0 top-0 h-full w-64 bg-dark-surface border-r border-dark-border z-50 lg:translate-x-0 lg:static lg:z-auto"
+        className="fixed left-0 top-0 h-screen w-64 bg-dark-surface border-r border-dark-border z-50 lg:translate-x-0 lg:static lg:z-auto"
       >
         <div className="flex flex-col h-full">
           {/* Logo/Brand */}
@@ -71,7 +101,13 @@ const Sidebar = () => {
                 <NavLink
                   key={item.path}
                   to={item.path}
-                  onClick={item.comingSoon ? (e) => e.preventDefault() : undefined}
+                  onClick={(e) => {
+                    if (item.comingSoon) {
+                      e.preventDefault()
+                    } else {
+                      handleNavClick()
+                    }
+                  }}
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${
                       isActive

@@ -1,3 +1,4 @@
+const { log } = require('console');
 const mongoose = require('mongoose');
 
 // Cache for dynamic models
@@ -107,9 +108,10 @@ const clearModelCache = (collectionName) => {
   if (modelCache.has(collectionName)) {
     modelCache.delete(collectionName);
   }
-  // Delete the model from mongoose
+
+  
   delete mongoose.models[collectionName];
-  delete mongoose.modelSchemas[collectionName];
+  // delete mongoose.modelSchemas[collectionName];
 };
 
 module.exports = {

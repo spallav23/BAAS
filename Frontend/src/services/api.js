@@ -64,9 +64,14 @@ export const authAPI = {
     api.post('/auth/register', { email, password, name }),
   logout: (refreshToken) => api.post('/auth/logout', { refreshToken }),
   getCurrentUser: () => api.get('/auth/me'),
+  updateUser: (userId, data) => api.put(`/auth/user/${userId}`, data),
+  deleteUser: (userId) => api.delete(`/auth/user/${userId}`),
   forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
+  verifyCode: (email, code) => api.post('/auth/verify-code', { email, code }),
   resetPassword: (email, code, newPassword) =>
     api.post('/auth/reset-password', { email, code, newPassword }),
+  sendVerification: () => api.post('/auth/send-verification'),
+  verifyEmail: (code) => api.post('/auth/verify-email', { code }),
 }
 
 // Cluster API

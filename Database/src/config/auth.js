@@ -1,8 +1,9 @@
 const axios = require('axios');
+const { log } = require('console');
 
 const verifyToken = async (token) => {
   try {
-    const authServiceUrl = process.env.AUTH_SERVICE_URL || 'http://localhost:3001';
+    const authServiceUrl = process.env.AUTH_SERVICE_URL || "http://127.0.0.1:3001";
     const response = await axios.get(`${authServiceUrl}/api/auth/me`, {
       headers: {
         Authorization: `Bearer ${token}`,

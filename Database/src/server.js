@@ -14,8 +14,28 @@ const PORT = process.env.PORT || 3003;
 
 app.use(helmet());
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+// Body parsing with error handling
+app.use(express.json({ 
+  limit: '10mb',
+  verify: (req, res, buf) => {
+    req.rawBody = buf;
+  }
+}));
+app.use(express.urlencoded({ 
+  extended: true, 
+  limit: '10mb' 
+}));
+
+// Handle aborted requests gracefully
+app.use((req, res, next) => {
+  req.on('aborted', () => {
+    if (!res.headersSent) {
+      res.status(499).json({ error: 'Request aborted by client' });
+    }
+  });
+  next();
+});
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'database-service', timestamp: new Date().toISOString() });
@@ -45,9 +65,24 @@ const startServer = async () => {
       console.warn('Kafka connection failed, continuing without Kafka:', kafkaError.message);
     }
 
-    app.listen(PORT, () => {
+    // Start server with timeout settings
+    const server = app.listen(PORT, () => {
       console.log(`Database Service running on port ${PORT}`);
       console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    });
+
+    // Configure server timeouts
+    server.timeout = 30000; // 30 seconds
+    server.keepAliveTimeout = 65000; // 65 seconds
+    server.headersTimeout = 66000; // 66 seconds
+
+    // Handle server errors
+    server.on('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        console.error(`Port ${PORT} is already in use`);
+      } else {
+        console.error('Server error:', err);
+      }
     });
   } catch (error) {
     console.error('Failed to start server:', error);
