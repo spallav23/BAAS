@@ -51,20 +51,24 @@ STORAGE_SERVICE_URL=http://localhost:3002
 - The MongoDB URI is for storing cluster metadata. User data is stored in dynamically created collections.
 - Make sure the Auth Service is running and accessible at `AUTH_SERVICE_URL`.
 
-### 3. Start Dependencies (Optional - Using Docker Compose)
+### 3. Start Dependencies (Centralized Infrastructure)
 
-If you want separate instances for this service:
+**Important:** Infrastructure services (MongoDB, Redis, Kafka) are centralized and shared by all services.
+
+Start the shared infrastructure from the root directory:
 
 ```bash
+# From the root SD/ directory
+cd ..
 docker-compose up -d
 ```
 
 This will start:
-- MongoDB on port 27018
-- Redis on port 6380
-- Zookeeper and Kafka on port 9093
+- MongoDB on port 27017 (shared)
+- Redis on port 6379 (shared)
+- Zookeeper and Kafka on port 9092 (shared)
 
-**Note:** If you're using shared infrastructure (same Kafka, Redis as Auth service), you can skip this and update `.env` accordingly.
+All services (Auth, Database, Storage) connect to these same infrastructure instances. Each service uses its own database within MongoDB but shares the same MongoDB instance.
 
 ### 4. Start the Database Service
 

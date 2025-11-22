@@ -8,11 +8,9 @@ const authMiddleware = async (req, res, next) => {
       return res.status(401).json({ error: 'No token provided, authorization denied' });
     }
 
-    // Verify token with auth service
     const user = await verifyToken(token);
     req.userId = user.id;
     req.user = user;
-
     next();
   } catch (error) {
     if (error.message === 'Invalid or expired token') {

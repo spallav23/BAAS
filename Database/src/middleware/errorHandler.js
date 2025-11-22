@@ -1,7 +1,6 @@
 const errorHandler = (err, req, res, next) => {
   console.error('Error:', err);
 
-  // Validation errors
   if (err.name === 'ValidationError') {
     return res.status(400).json({
       error: 'Validation error',
@@ -9,7 +8,6 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // MongoDB duplicate key error
   if (err.code === 11000) {
     return res.status(400).json({
       error: 'Duplicate entry',
@@ -17,14 +15,12 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // Cast errors (invalid ID format)
   if (err.name === 'CastError') {
     return res.status(400).json({
       error: 'Invalid ID format',
     });
   }
 
-  // Default error
   res.status(err.status || 500).json({
     error: err.message || 'Internal server error',
   });

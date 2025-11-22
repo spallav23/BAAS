@@ -11,49 +11,40 @@ const errorHandler = require('./middleware/errorHandler');
 const app = express();
 const PORT = process.env.PORT || 3003;
 
-// Middleware
+
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'database-service', timestamp: new Date().toISOString() });
 });
 
-// Routes
 app.use('/api/db', clusterRoutes);
 
-// Error handler (must be last)
 app.use(errorHandler);
 
-// 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-// Initialize services and start server
 const startServer = async () => {
   try {
-    // Connect to MongoDB
     await connectDB();
 
-    // Connect to Redis
     try {
       await connectRedis();
     } catch (redisError) {
       console.warn('Redis connection failed, continuing without Redis:', redisError.message);
     }
 
-    // Connect to Kafka
     try {
       await connectKafka();
     } catch (kafkaError) {
       console.warn('Kafka connection failed, continuing without Kafka:', kafkaError.message);
     }
 
-    // Start server
     app.listen(PORT, () => {
       console.log(`Database Service running on port ${PORT}`);
       console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
@@ -66,7 +57,6 @@ const startServer = async () => {
 
 startServer();
 
-// Graceful shutdown
 process.on('SIGTERM', () => {
   console.log('SIGTERM signal received: closing HTTP server');
   process.exit(0);

@@ -7,7 +7,6 @@ const authMiddleware = require('../middleware/auth');
 const checkClusterAccess = require('../middleware/clusterAccess');
 const validate = require('../middleware/validation');
 
-// Validation middleware
 const createClusterValidation = [
   body('name').trim().notEmpty().withMessage('Name is required'),
   body('description').optional().trim(),
@@ -27,7 +26,6 @@ const updateClusterValidation = [
   body('apiEnabled').optional().isBoolean(),
 ];
 
-// Cluster management routes
 router.use(authMiddleware);
 router.post('/clusters', createClusterValidation, validate, clusterController.createCluster);
 router.get('/clusters', clusterController.listClusters);
@@ -35,7 +33,6 @@ router.get('/clusters/:clusterId', checkClusterAccess, clusterController.getClus
 router.put('/clusters/:clusterId', checkClusterAccess, updateClusterValidation, validate, clusterController.updateCluster);
 router.delete('/clusters/:clusterId', checkClusterAccess, clusterController.deleteCluster);
 
-// Data CRUD routes (protected by cluster access middleware)
 router.post('/clusters/:clusterId/data', checkClusterAccess, dataController.createDocument);
 router.get('/clusters/:clusterId/data', checkClusterAccess, dataController.listDocuments);
 router.get('/clusters/:clusterId/data/:documentId', checkClusterAccess, dataController.getDocument);

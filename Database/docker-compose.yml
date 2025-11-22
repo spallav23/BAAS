@@ -1,57 +1,11 @@
 version: '3.8'
 
-services:
-  mongodb:
-    image: mongo:6
-    container_name: db-service-mongodb
-    ports:
-      - "27018:27017"
-    environment:
-      MONGO_INITDB_DATABASE: database-service
-    volumes:
-      - mongodb_data:/data/db
-    networks:
-      - db-service-network
+# NOTE: This file is kept for reference but infrastructure is centralized
+# Use the root docker-compose.yml instead: ../docker-compose.yml
+# All services share MongoDB, Redis, Kafka, and Zookeeper from the root directory
 
-  redis:
-    image: redis
-    container_name: db-service-redis
-    ports:
-      - "6380:6379"
-    volumes:
-      - redis_data:/data
-    networks:
-      - db-service-network
+# To start infrastructure, run from the root directory:
+# docker-compose up -d
 
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.3.0
-    container_name: db-service-zookeeper
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    networks:
-      - db-service-network
-
-  kafka:
-    image: confluentinc/cp-kafka:7.3.0
-    container_name: db-service-kafka
-    depends_on:
-      - zookeeper
-    ports:
-      - "9093:9092"
-    environment:
-      KAFKA_BROKER_ID: 2
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9093
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-    networks:
-      - db-service-network
-
-volumes:
-  mongodb_data:
-  redis_data:
-
-networks:
-  db-service-network:
-    driver: bridge
+# This file is deprecated - use ../docker-compose.yml for infrastructure
 

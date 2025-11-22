@@ -30,9 +30,26 @@ const schemaFieldSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  default: mongoose.Schema.Types.Mixed,
-  enum: [String],
+  default: {
+    type: mongoose.Schema.Types.Mixed,
+    required: false,
+  },
+  enum: {
+    type: [String],
+    required: false,
+  },
 });
+
+const schemaDefinitionSchema = new mongoose.Schema({
+  fields: {
+    type: [schemaFieldSchema],
+    default: [],
+  },
+  strict: {
+    type: Boolean,
+    default: false,
+  },
+}, { _id: false });
 
 const clusterSchema = new mongoose.Schema(
   {
@@ -64,11 +81,8 @@ const clusterSchema = new mongoose.Schema(
     },
     // Optional schema definition
     schema: {
-      fields: [schemaFieldSchema],
-      strict: {
-        type: Boolean,
-        default: false,
-      },
+      type: schemaDefinitionSchema,
+      default: { fields: [], strict: false },
     },
     // Indexes configuration
     indexes: [indexSchema],
@@ -102,7 +116,6 @@ const clusterSchema = new mongoose.Schema(
   }
 );
 
-// Generate collection name based on userId and slug
 clusterSchema.pre('save', function (next) {
   if (!this.collectionName) {
     this.collectionName = `cluster_${this.userId}_${this.slug}`;
@@ -110,7 +123,6 @@ clusterSchema.pre('save', function (next) {
   next();
 });
 
-// Create slug from name
 clusterSchema.pre('save', function (next) {
   if (this.isModified('name') && !this.slug) {
     this.slug = this.name

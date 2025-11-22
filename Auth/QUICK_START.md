@@ -64,9 +64,13 @@ DATABASE_SERVICE_URL=http://localhost:3003
 
 ### 3. Start Dependencies (Using Docker Compose)
 
-The easiest way to start MongoDB, Redis, and Kafka is using Docker Compose:
+**Important:** Infrastructure services (MongoDB, Redis, Kafka) are centralized. 
+
+Start the shared infrastructure from the root directory:
 
 ```bash
+# From the root SD/ directory
+cd ..
 docker-compose up -d
 ```
 
@@ -74,6 +78,8 @@ This will start:
 - MongoDB on port 27017
 - Redis on port 6379
 - Zookeeper and Kafka on port 9092
+
+All services (Auth, Database, Storage) share these infrastructure instances.
 
 ### 4. Start the Auth Service
 
