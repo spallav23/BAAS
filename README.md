@@ -14,18 +14,24 @@ The platform consists of multiple microservices, all sharing centralized infrast
 
 ### Microservices
 
-1. **Auth Service** (Port 3001)
+1. **API Gateway** (Port 3000)
+   - Single entry point for all requests
+   - Request routing to microservices
+   - Rate limiting and security
+   - Health check aggregation
+
+2. **Auth Service** (Port 3001)
    - User authentication and authorization
    - JWT token management
    - Email verification
    - Password reset
 
-2. **Database Service** (Port 3003)
+3. **Database Service** (Port 3003)
    - Dynamic database cluster/collection management
    - CRUD API generation per cluster
    - Data isolation per user
 
-3. **Storage Service** (Coming soon)
+4. **Storage Service** (Coming soon)
    - File upload and management
    - Storage API endpoints
 
@@ -46,6 +52,14 @@ This starts:
 - Zookeeper on port `2181`
 
 ### 2. Start Microservices
+
+**API Gateway (Start this first):**
+```bash
+cd ApiGateway
+npm install
+# Create .env file (see ApiGateway/QUICK_START.md)
+npm run dev
+```
 
 **Auth Service:**
 ```bash
@@ -68,11 +82,15 @@ npm run dev
 ```
 SD/
 ├── docker-compose.yml          # Centralized infrastructure
+├── ApiGateway/                 # API Gateway (entry point)
+│   ├── src/
+│   ├── package.json
+│   └── ...
 ├── Auth/                       # Authentication microservice
 │   ├── src/
 │   ├── package.json
 │   └── ...
-├── Database/                   # Database microservice
+├── Database/                  # Database microservice
 │   ├── src/
 │   ├── package.json
 │   └── ...
@@ -114,12 +132,26 @@ docker-compose up -d
 
 2. Start services in separate terminals:
 ```bash
-# Terminal 1
+# Terminal 1 - API Gateway (start first)
+cd ApiGateway && npm run dev
+
+# Terminal 2 - Auth Service
 cd Auth && npm run dev
 
-# Terminal 2
+# Terminal 3 - Database Service
 cd Database && npm run dev
 ```
+
+### Accessing Services
+
+**Through API Gateway (Recommended):**
+- Gateway: `http://localhost:3000`
+- Auth: `http://localhost:3000/api/auth/*`
+- Database: `http://localhost:3000/api/db/*`
+
+**Direct Service Access (Development):**
+- Auth: `http://localhost:3001`
+- Database: `http://localhost:3003`
 
 ### Stopping Everything
 
@@ -132,11 +164,13 @@ docker-compose down
 ## Health Checks
 
 - Infrastructure: `docker ps` to see running containers
+- API Gateway: `http://localhost:3000/health` (aggregated health)
 - Auth Service: `http://localhost:3001/health`
 - Database Service: `http://localhost:3003/health`
 
 ## Documentation
 
+- [API Gateway Documentation](./ApiGateway/README.md)
 - [Auth Service Documentation](./Auth/README.md)
 - [Database Service Documentation](./Database/README.md)
 - [Auth API Docs](./Auth/API_DOCUMENTATION.md)
