@@ -4,6 +4,7 @@ const { body } = require('express-validator');
 const bucketController = require('../controllers/bucketController');
 const fileController = require('../controllers/fileController');
 const authMiddleware = require('../middleware/auth');
+const optionalAuthMiddleware = require('../middleware/optionalAuth');
 const checkBucketAccess = require('../middleware/bucketAccess');
 const { upload, checkFileSize } = require('../middleware/upload');
 const validate = require('../middleware/validation');

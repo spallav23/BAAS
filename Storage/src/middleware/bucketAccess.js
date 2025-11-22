@@ -13,24 +13,51 @@ const checkBucketAccess = async (req, res, next) => {
       return res.status(403).json({ error: 'Bucket is inactive' });
     }
 
-    // Check if user owns the bucket
-    if (bucket.userId !== req.userId) {
-      // Check public access for read operations
-      if (req.method === 'GET') {
-        if (bucket.readAccess === 'private') {
-          return res.status(403).json({ error: 'Access denied to this bucket' });
-        }
-      } else {
-        // For write operations, check write access
-        if (bucket.writeAccess === 'private' || bucket.userId !== req.userId) {
-          return res.status(403).json({ error: 'Access denied to this bucket' });
-        }
+    // Check access based on access level
+    const isOwner = req.userId && bucket.userId === req.userId;
+    const isReadOperation = req.method === 'GET';
+    const isWriteOperation = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method);
+
+    // Owner has full access
+    if (isOwner) {
+      req.bucket = bucket;
+      return next();
+    }
+
+    // Check read access
+    if (isReadOperation) {
+      if (bucket.readAccess === 'public') {
+        // Public access - no auth required
+        req.bucket = bucket;
+        return next();
+      } else if (bucket.readAccess === 'authenticated' && req.userId) {
+        // Authenticated access - user must be logged in
+        req.bucket = bucket;
+        return next();
+      } else if (bucket.readAccess === 'private') {
+        // Private access - only owner
+        return res.status(403).json({ error: 'Access denied to this bucket' });
       }
     }
 
-    // Attach bucket to request
-    req.bucket = bucket;
-    next();
+    // Check write access
+    if (isWriteOperation) {
+      if (bucket.writeAccess === 'public') {
+        // Public write access
+        req.bucket = bucket;
+        return next();
+      } else if (bucket.writeAccess === 'authenticated' && req.userId) {
+        // Authenticated write access
+        req.bucket = bucket;
+        return next();
+      } else if (bucket.writeAccess === 'private') {
+        // Private write access - only owner
+        return res.status(403).json({ error: 'Write access denied' });
+      }
+    }
+
+    // Default: deny access
+    return res.status(403).json({ error: 'Access denied to this bucket' });
   } catch (error) {
     console.error('Bucket access check error:', error);
     res.status(500).json({ error: 'Server error' });
