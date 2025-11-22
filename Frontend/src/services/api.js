@@ -98,5 +98,33 @@ export const dataAPI = {
     api.delete(`/db/clusters/${clusterId}/data/${documentId}`),
 }
 
+// Storage API
+export const storageAPI = {
+  // Buckets
+  getBuckets: () => api.get('/storage/buckets'),
+  getBucket: (bucketId) => api.get(`/storage/buckets/${bucketId}`),
+  createBucket: (data) => api.post('/storage/buckets', data),
+  updateBucket: (bucketId, data) => api.put(`/storage/buckets/${bucketId}`, data),
+  deleteBucket: (bucketId) => api.delete(`/storage/buckets/${bucketId}`),
+  
+  // Files
+  getFiles: (bucketId, params) =>
+    api.get(`/storage/buckets/${bucketId}/files`, { params }),
+  getFile: (bucketId, fileId) =>
+    api.get(`/storage/buckets/${bucketId}/files/${fileId}`),
+  uploadFile: (bucketId, formData) =>
+    api.post(`/storage/buckets/${bucketId}/files`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
+  downloadFile: (bucketId, fileName) =>
+    api.get(`/storage/buckets/${bucketId}/files/${fileName}/download`, {
+      responseType: 'blob',
+    }),
+  deleteFile: (bucketId, fileId) =>
+    api.delete(`/storage/buckets/${bucketId}/files/${fileId}`),
+}
+
 export default api
 
