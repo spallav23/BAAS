@@ -28,21 +28,21 @@ const updateBucketValidation = [
   body('apiEnabled').optional().isBoolean(),
 ];
 
-router.use(authMiddleware);
+// Bucket routes - require auth for creation/listing
+router.post('/buckets', authMiddleware, createBucketValidation, validate, bucketController.createBucket);
+router.get('/buckets', authMiddleware, bucketController.listBuckets);
 
-// Bucket routes
-router.post('/buckets', createBucketValidation, validate, bucketController.createBucket);
-router.get('/buckets', bucketController.listBuckets);
-router.get('/buckets/:bucketId', checkBucketAccess, bucketController.getBucket);
-router.put('/buckets/:bucketId', checkBucketAccess, updateBucketValidation, validate, bucketController.updateBucket);
-router.delete('/buckets/:bucketId', checkBucketAccess, bucketController.deleteBucket);
+// Bucket detail and file routes - use optional auth (allows public access)
+router.get('/buckets/:bucketId', optionalAuthMiddleware, checkBucketAccess, bucketController.getBucket);
+router.put('/buckets/:bucketId', authMiddleware, checkBucketAccess, updateBucketValidation, validate, bucketController.updateBucket);
+router.delete('/buckets/:bucketId', authMiddleware, checkBucketAccess, bucketController.deleteBucket);
 
-// File routes
-router.post('/buckets/:bucketId/files', checkBucketAccess, checkFileSize, upload.single('file'), fileController.uploadFile);
-router.get('/buckets/:bucketId/files', checkBucketAccess, fileController.listFiles);
-router.get('/buckets/:bucketId/files/:fileId', checkBucketAccess, fileController.getFile);
-router.get('/buckets/:bucketId/files/:fileName/download', checkBucketAccess, fileController.downloadFile);
-router.delete('/buckets/:bucketId/files/:fileId', checkBucketAccess, fileController.deleteFile);
+// File routes - use optional auth (allows public access)
+router.post('/buckets/:bucketId/files', optionalAuthMiddleware, checkBucketAccess, checkFileSize, upload.single('file'), fileController.uploadFile);
+router.get('/buckets/:bucketId/files', optionalAuthMiddleware, checkBucketAccess, fileController.listFiles);
+router.get('/buckets/:bucketId/files/:fileId', optionalAuthMiddleware, checkBucketAccess, fileController.getFile);
+router.get('/buckets/:bucketId/files/:fileName/download', optionalAuthMiddleware, checkBucketAccess, fileController.downloadFile);
+router.delete('/buckets/:bucketId/files/:fileId', optionalAuthMiddleware, checkBucketAccess, fileController.deleteFile);
 
 module.exports = router;
 

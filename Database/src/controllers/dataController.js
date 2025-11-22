@@ -42,7 +42,8 @@ const createDocument = async (req, res) => {
       return res.status(403).json({ error: 'API is disabled for this cluster' });
     }
 
-    if (cluster.writeAccess === 'private' && cluster.userId !== req.userId) {
+    // Write access check (handled in middleware, but verify here)
+    if (cluster.writeAccess === 'private' && (!req.userId || cluster.userId !== req.userId)) {
       return res.status(403).json({ error: 'Write access denied' });
     }
 
@@ -72,7 +73,7 @@ const createDocument = async (req, res) => {
     await publishEvent('cluster-events', {
       type: 'DOCUMENT_CREATED',
       clusterId: cluster._id.toString(),
-      userId: req.userId,
+      userId: req.userId || cluster.userId,
       documentId: document._id.toString(),
     });
 
@@ -101,7 +102,8 @@ const listDocuments = async (req, res) => {
       return res.status(403).json({ error: 'API is disabled for this cluster' });
     }
 
-    if (cluster.readAccess === 'private' && cluster.userId !== req.userId) {
+    // Read access check (handled in middleware, but verify here)
+    if (cluster.readAccess === 'private' && (!req.userId || cluster.userId !== req.userId)) {
       return res.status(403).json({ error: 'Read access denied' });
     }
 
@@ -166,7 +168,8 @@ const getDocument = async (req, res) => {
       return res.status(403).json({ error: 'API is disabled for this cluster' });
     }
 
-    if (cluster.readAccess === 'private' && cluster.userId !== req.userId) {
+    // Read access check (handled in middleware, but verify here)
+    if (cluster.readAccess === 'private' && (!req.userId || cluster.userId !== req.userId)) {
       return res.status(403).json({ error: 'Read access denied' });
     }
 
@@ -202,7 +205,8 @@ const updateDocument = async (req, res) => {
       return res.status(403).json({ error: 'API is disabled for this cluster' });
     }
 
-    if (cluster.writeAccess === 'private' && cluster.userId !== req.userId) {
+    // Write access check (handled in middleware, but verify here)
+    if (cluster.writeAccess === 'private' && (!req.userId || cluster.userId !== req.userId)) {
       return res.status(403).json({ error: 'Write access denied' });
     }
 
@@ -226,7 +230,7 @@ const updateDocument = async (req, res) => {
     await publishEvent('cluster-events', {
       type: 'DOCUMENT_UPDATED',
       clusterId: cluster._id.toString(),
-      userId: req.userId,
+      userId: req.userId || cluster.userId,
       documentId: documentId,
     });
 
@@ -259,7 +263,8 @@ const patchDocument = async (req, res) => {
       return res.status(403).json({ error: 'API is disabled for this cluster' });
     }
 
-    if (cluster.writeAccess === 'private' && cluster.userId !== req.userId) {
+    // Write access check (handled in middleware, but verify here)
+    if (cluster.writeAccess === 'private' && (!req.userId || cluster.userId !== req.userId)) {
       return res.status(403).json({ error: 'Write access denied' });
     }
 
@@ -283,7 +288,7 @@ const patchDocument = async (req, res) => {
     await publishEvent('cluster-events', {
       type: 'DOCUMENT_UPDATED',
       clusterId: cluster._id.toString(),
-      userId: req.userId,
+      userId: req.userId || cluster.userId,
       documentId: documentId,
     });
 
@@ -316,7 +321,8 @@ const deleteDocument = async (req, res) => {
       return res.status(403).json({ error: 'API is disabled for this cluster' });
     }
 
-    if (cluster.writeAccess === 'private' && cluster.userId !== req.userId) {
+    // Write access check (handled in middleware, but verify here)
+    if (cluster.writeAccess === 'private' && (!req.userId || cluster.userId !== req.userId)) {
       return res.status(403).json({ error: 'Write access denied' });
     }
 
@@ -372,7 +378,8 @@ const deleteDocuments = async (req, res) => {
       return res.status(403).json({ error: 'API is disabled for this cluster' });
     }
 
-    if (cluster.writeAccess === 'private' && cluster.userId !== req.userId) {
+    // Write access check (handled in middleware, but verify here)
+    if (cluster.writeAccess === 'private' && (!req.userId || cluster.userId !== req.userId)) {
       return res.status(403).json({ error: 'Write access denied' });
     }
 
@@ -404,7 +411,7 @@ const deleteDocuments = async (req, res) => {
     await publishEvent('cluster-events', {
       type: 'DOCUMENTS_DELETED',
       clusterId: cluster._id.toString(),
-      userId: req.userId,
+      userId: req.userId || cluster.userId,
       count: result.deletedCount,
     });
 

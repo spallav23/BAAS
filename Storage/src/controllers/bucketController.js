@@ -165,8 +165,8 @@ const updateBucket = async (req, res) => {
       return res.status(404).json({ error: 'Bucket not found' });
     }
 
-    // Check ownership
-    if (bucket.userId !== req.userId) {
+    // Check ownership (update requires auth and ownership)
+    if (!req.userId || bucket.userId !== req.userId) {
       return res.status(403).json({ error: 'Not authorized to update this bucket' });
     }
 
@@ -216,8 +216,8 @@ const deleteBucket = async (req, res) => {
       return res.status(404).json({ error: 'Bucket not found' });
     }
 
-    // Check ownership
-    if (bucket.userId !== req.userId) {
+    // Check ownership (delete requires auth and ownership)
+    if (!req.userId || bucket.userId !== req.userId) {
       return res.status(403).json({ error: 'Not authorized to delete this bucket' });
     }
 

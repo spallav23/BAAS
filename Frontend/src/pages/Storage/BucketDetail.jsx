@@ -34,6 +34,9 @@ const BucketDetail = () => {
   const fetchFiles = async () => {
     try {
       const response = await storageAPI.getFiles(bucketId)
+      
+      console.log(response.data);
+      
       setFiles(response.data.files || [])
     } catch (error) {
       toast.error('Failed to load files')
@@ -210,7 +213,7 @@ const BucketDetail = () => {
           <div className="space-y-2">
             {files.map((file, index) => (
               <motion.div
-                key={file.id}
+                key={file._id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.05 }}
@@ -248,12 +251,12 @@ const BucketDetail = () => {
                     <FiDownload className="w-4 h-4 text-dark-text-muted hover:text-accent-blue" />
                   </button>
                   <button
-                    onClick={() => handleDeleteFile(file.id)}
+                    onClick={() => handleDeleteFile(file._id)}
                     disabled={deletingId === file.id}
                     className="p-2 rounded-lg hover:bg-red-600/20 transition-colors disabled:opacity-50"
                     title="Delete"
                   >
-                    {deletingId === file.id ? (
+                    {deletingId === file._id ? (
                       <div className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin"></div>
                     ) : (
                       <FiTrash2 className="w-4 h-4 text-dark-text-muted hover:text-red-400" />

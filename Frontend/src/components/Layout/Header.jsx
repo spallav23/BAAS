@@ -22,6 +22,19 @@ const Header = () => {
     }
   }
 
+  const handleNotificationClick = () => {
+    // TODO: Implement notification dropdown or navigate to notifications page
+    toast.info('Notifications feature coming soon!')
+  }
+
+  const handleProfileClick = () => {
+    navigate('/profile')
+  }
+
+  const handleLogoClick = () => {
+    navigate('/')
+  }
+
   return (
     <motion.header
       initial={{ y: -20, opacity: 0 }}
@@ -38,7 +51,10 @@ const Header = () => {
           >
             <FiMenu className="w-5 h-5 text-dark-text" />
           </button>
-          <h1 className="text-xl font-bold gradient-text hidden sm:block">
+          <h1 
+            onClick={handleLogoClick}
+            className="text-xl font-bold gradient-text hidden sm:block cursor-pointer hover:opacity-80 transition-opacity"
+          >
             BaaS Platform
           </h1>
         </div>
@@ -46,14 +62,31 @@ const Header = () => {
         {/* Right Section */}
         <div className="flex items-center gap-3">
           {/* Notifications */}
-          <button className="p-2 rounded-lg hover:bg-dark-card transition-colors relative">
+          <button 
+            onClick={handleNotificationClick}
+            className="p-2 rounded-lg hover:bg-dark-card transition-colors relative"
+            aria-label="Notifications"
+          >
             <FiBell className="w-5 h-5 text-dark-text" />
             <span className="absolute top-1 right-1 w-2 h-2 bg-accent-pink rounded-full"></span>
           </button>
 
           {/* User Menu */}
           <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center gap-3 px-4 py-2 rounded-lg bg-dark-card">
+            {/* Mobile Profile Button */}
+            <button
+              onClick={handleProfileClick}
+              className="md:hidden p-2 rounded-lg hover:bg-dark-card transition-colors"
+              aria-label="Profile"
+            >
+              <FiUser className="w-5 h-5 text-dark-text" />
+            </button>
+
+            {/* Desktop Profile Section */}
+            <div 
+              onClick={handleProfileClick}
+              className="hidden md:flex items-center gap-3 px-4 py-2 rounded-lg bg-dark-card cursor-pointer hover:bg-dark-card/80 transition-colors"
+            >
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent-blue to-accent-purple flex items-center justify-center">
                 <FiUser className="w-4 h-4 text-white" />
               </div>

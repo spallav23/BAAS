@@ -15,7 +15,8 @@ const uploadFile = async (req, res) => {
       return res.status(403).json({ error: 'API is disabled for this bucket' });
     }
 
-    if (bucket.writeAccess === 'private' && bucket.userId !== req.userId) {
+    // Write access check (handled in middleware, but verify here)
+    if (bucket.writeAccess === 'private' && (!req.userId || bucket.userId !== req.userId)) {
       return res.status(403).json({ error: 'Write access denied' });
     }
 
@@ -52,7 +53,7 @@ const uploadFile = async (req, res) => {
     // Create file record
     const file = new File({
       bucketId: bucket._id,
-      userId: req.userId,
+      userId: req.userId || bucket.userId, // Use bucket owner if no user
       originalName: req.file.originalname,
       fileName: req.file.filename,
       filePath: req.file.path,
@@ -88,7 +89,7 @@ const uploadFile = async (req, res) => {
     await publishEvent('storage-events', {
       type: 'FILE_UPLOADED',
       bucketId: bucket._id.toString(),
-      userId: req.userId,
+      userId: req.userId || bucket.userId,
       fileId: file._id.toString(),
       fileName: file.originalName,
       fileSize: file.size,
@@ -129,7 +130,8 @@ const listFiles = async (req, res) => {
       return res.status(403).json({ error: 'API is disabled for this bucket' });
     }
 
-    if (bucket.readAccess === 'private' && bucket.userId !== req.userId) {
+    // Read access check (handled in middleware, but verify here)
+    if (bucket.readAccess === 'private' && (!req.userId || bucket.userId !== req.userId)) {
       return res.status(403).json({ error: 'Read access denied' });
     }
 
@@ -187,7 +189,8 @@ const getFile = async (req, res) => {
       return res.status(403).json({ error: 'API is disabled for this bucket' });
     }
 
-    if (bucket.readAccess === 'private' && bucket.userId !== req.userId) {
+    // Read access check (handled in middleware, but verify here)
+    if (bucket.readAccess === 'private' && (!req.userId || bucket.userId !== req.userId)) {
       return res.status(403).json({ error: 'Read access denied' });
     }
 
@@ -227,8 +230,8 @@ const downloadFile = async (req, res) => {
       return res.status(404).json({ error: 'File not found' });
     }
 
-    // Check access
-    if (bucket.readAccess === 'private' && file.userId !== req.userId) {
+    // Check access (handled in middleware, but verify here)
+    if (bucket.readAccess === 'private' && (!req.userId || file.userId !== req.userId)) {
       return res.status(403).json({ error: 'Access denied' });
     }
 
@@ -261,7 +264,8 @@ const deleteFile = async (req, res) => {
       return res.status(403).json({ error: 'API is disabled for this bucket' });
     }
 
-    if (bucket.writeAccess === 'private' && bucket.userId !== req.userId) {
+    // Write access check (handled in middleware, but verify here)
+    if (bucket.writeAccess === 'private' && (!req.userId || bucket.userId !== req.userId)) {
       return res.status(403).json({ error: 'Write access denied' });
     }
 
@@ -302,7 +306,7 @@ const deleteFile = async (req, res) => {
     await publishEvent('storage-events', {
       type: 'FILE_DELETED',
       bucketId: bucket._id.toString(),
-      userId: req.userId,
+      userId: req.userId || bucket.userId,
       fileId: fileId,
     });
 

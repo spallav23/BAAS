@@ -66,7 +66,7 @@ const startServer = async () => {
     }
 
     // Start server with timeout settings
-    const server = app.listen(PORT, () => {
+    const server = app.listen(PORT, "0.0.0.0", () => {
       console.log(`Database Service running on port ${PORT}`);
       console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
     });

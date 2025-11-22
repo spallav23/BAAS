@@ -32,7 +32,8 @@ function App() {
       {/* Public Routes */}
       <Route
         path="/"
-        element={isAuthenticated ? <Navigate to="/dashboard" /> : <Landing />}
+        element={ <Landing />}
+        // element={isAuthenticated ? <Navigate to="/dashboard" /> : <Landing />}
       />
       <Route
         path="/login"
