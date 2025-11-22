@@ -7,7 +7,16 @@ const mongoose = require('mongoose');
 // Create cluster
 const createCluster = async (req, res) => {
   try {
+    // Validate userId is present
+    if (!req.userId) {
+      return res.status(401).json({ error: 'User ID not found. Please ensure you are authenticated.' });
+    }
+
     const { name, description, schema, indexes, readAccess, writeAccess } = req.body;
+
+    if (!name) {
+      return res.status(400).json({ error: 'Cluster name is required' });
+    }
 
     // Generate slug from name
     let slug = name

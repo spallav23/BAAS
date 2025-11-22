@@ -8,12 +8,26 @@ const verifyToken = async (token) => {
         Authorization: `Bearer ${token}`,
       },
     });
+    
+    if (!response.data || !response.data.user) {
+      console.error('Invalid response from auth service:', response.data);
+      throw new Error('Invalid response from auth service');
+    }
+    
     return response.data.user;
   } catch (error) {
     if (error.response) {
-      throw new Error('Invalid or expired token');
+      console.error('Auth service error response:', error.response.status, error.response.data);
+      if (error.response.status === 401) {
+        throw new Error('Invalid or expired token');
+      }
+      throw new Error(`Auth service error: ${error.response.status}`);
     }
-    throw new Error('Auth service unavailable');
+    if (error.request) {
+      console.error('Auth service request failed:', error.message);
+      throw new Error('Auth service unavailable');
+    }
+    throw error;
   }
 };
 
