@@ -22,6 +22,32 @@ const Dashboard = () => {
     dispatch(getCurrentUser())
   }, [dispatch])
 
+  const getColorClasses = (color) => {
+    const colorMap = {
+      'accent-blue': {
+        bg: 'bg-accent-blue/20',
+        text: 'text-accent-blue',
+      },
+      'accent-purple': {
+        bg: 'bg-accent-purple/20',
+        text: 'text-accent-purple',
+      },
+      'accent-green': {
+        bg: 'bg-accent-green/20',
+        text: 'text-accent-green',
+      },
+      'accent-pink': {
+        bg: 'bg-accent-pink/20',
+        text: 'text-accent-pink',
+      },
+      'accent-orange': {
+        bg: 'bg-accent-orange/20',
+        text: 'text-accent-orange',
+      },
+    }
+    return colorMap[color] || colorMap['accent-blue']
+  }
+
   const stats = [
     {
       label: 'Total Clusters',
@@ -98,6 +124,7 @@ const Dashboard = () => {
       >
         {stats.map((stat, index) => {
           const Icon = stat.icon
+          const colorClasses = getColorClasses(stat.color)
           return (
             <motion.div
               key={index}
@@ -118,9 +145,9 @@ const Dashboard = () => {
                   </p>
                 </div>
                 <div
-                  className={`w-12 h-12 rounded-lg bg-${stat.color}/20 flex items-center justify-center`}
+                  className={`w-12 h-12 rounded-lg ${colorClasses.bg} flex items-center justify-center`}
                 >
-                  <Icon className={`w-6 h-6 text-${stat.color}`} />
+                  <Icon className={`w-6 h-6 ${colorClasses.text}`} />
                 </div>
               </div>
             </motion.div>

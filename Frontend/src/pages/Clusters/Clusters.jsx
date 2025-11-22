@@ -13,12 +13,15 @@ import {
 import { fetchClusters, deleteCluster } from '../../store/slices/clusterSlice'
 import toast from 'react-hot-toast'
 import CreateClusterModal from '../../components/Modals/CreateClusterModal'
+import UpdateClusterModal from '../../components/Modals/UpdateClusterModal'
 
 const Clusters = () => {
   const dispatch = useDispatch()
   const { clusters, isLoading } = useSelector((state) => state.clusters)
   const [searchTerm, setSearchTerm] = useState('')
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const [showUpdateModal, setShowUpdateModal] = useState(false)
+  const [selectedCluster, setSelectedCluster] = useState(null)
   const [deletingId, setDeletingId] = useState(null)
 
   useEffect(() => {
@@ -148,7 +151,8 @@ const Clusters = () => {
                       <button
                         onClick={(e) => {
                           e.preventDefault()
-                          // Handle edit
+                          setSelectedCluster(cluster)
+                          setShowUpdateModal(true)
                         }}
                         className="p-2 rounded-lg hover:bg-dark-surface transition-colors"
                       >
@@ -203,6 +207,17 @@ const Clusters = () => {
           <CreateClusterModal onClose={() => setShowCreateModal(false)} />
         )}
       </AnimatePresence>
+
+      {/* Update Cluster Modal */}
+      {showUpdateModal && selectedCluster && (
+        <UpdateClusterModal
+          cluster={selectedCluster}
+          onClose={() => {
+            setShowUpdateModal(false)
+            setSelectedCluster(null)
+          }}
+        />
+      )}
     </div>
   )
 }

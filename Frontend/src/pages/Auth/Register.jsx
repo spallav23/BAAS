@@ -32,15 +32,17 @@ const Register = () => {
     }
 
     try {
-      await dispatch(
+      const result = await dispatch(
         register({
           name: formData.name,
           email: formData.email,
           password: formData.password,
         })
       ).unwrap()
-      toast.success('Account created! Please login.')
-      navigate('/login')
+      toast.success('Account created! Please verify your email.')
+      navigate('/verify-email', {
+        state: { email: formData.email },
+      })
     } catch (error) {
       toast.error(error || 'Registration failed')
     }

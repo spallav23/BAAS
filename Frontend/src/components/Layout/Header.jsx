@@ -26,7 +26,7 @@ const Header = () => {
     <motion.header
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="sticky top-0 z-40 bg-dark-surface/80 backdrop-blur-md border-b border-dark-border"
+      className="sticky top-0 z-30 bg-dark-surface/80 backdrop-blur-md border-b border-dark-border"
     >
       <div className="flex items-center justify-between px-4 md:px-6 lg:px-8 h-16">
         {/* Left Section */}
@@ -34,6 +34,7 @@ const Header = () => {
           <button
             onClick={() => dispatch(toggleSidebar())}
             className="lg:hidden p-2 rounded-lg hover:bg-dark-card transition-colors"
+            aria-label="Toggle sidebar"
           >
             <FiMenu className="w-5 h-5 text-dark-text" />
           </button>

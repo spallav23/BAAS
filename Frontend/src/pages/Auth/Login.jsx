@@ -19,7 +19,14 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      await dispatch(login(formData)).unwrap()
+      const result = await dispatch(login(formData)).unwrap()
+      if (result.user && !result.user.emailVerified) {
+        toast('Please verify your email to continue', { icon: '⚠️' })
+        navigate('/verify-email', {
+          state: { email: formData.email, fromLogin: true },
+        })
+        return
+      }
       toast.success('Logged in successfully!')
       navigate('/dashboard')
     } catch (error) {
