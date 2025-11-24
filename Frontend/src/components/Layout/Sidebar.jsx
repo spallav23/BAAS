@@ -17,8 +17,8 @@ const menuItems = [
   { path: '/dashboard', icon: FiHome, label: 'Dashboard' },
   { path: '/clusters', icon: FiDatabase, label: 'Clusters' },
   { path: '/documents', icon: FiBook, label: 'Documents' },
+  { path: '/storage', icon: FiServer, label: 'Storage' },
   { path: '/profile', icon: FiUser, label: 'Profile' },
-  { path: '/storage', icon: FiServer, label: 'Storage', comingSoon: true },
 ]
 
 const Sidebar = () => {

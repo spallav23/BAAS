@@ -13,24 +13,51 @@ const checkClusterAccess = async (req, res, next) => {
       return res.status(403).json({ error: 'Cluster is inactive' });
     }
 
-    // Check if user owns the cluster
-    if (cluster.userId !== req.userId) {
-      // Check public access for read operations
-      if (req.method === 'GET') {
-        if (cluster.readAccess === 'private') {
-          return res.status(403).json({ error: 'Access denied to this cluster' });
-        }
-      } else {
-        // For write operations, check write access
-        if (cluster.writeAccess === 'private' || cluster.userId !== req.userId) {
-          return res.status(403).json({ error: 'Access denied to this cluster' });
-        }
+    // Check access based on access level
+    const isOwner = req.userId && cluster.userId === req.userId;
+    const isReadOperation = req.method === 'GET';
+    const isWriteOperation = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method);
+
+    // Owner has full access
+    if (isOwner) {
+      req.cluster = cluster;
+      return next();
+    }
+
+    // Check read access
+    if (isReadOperation) {
+      if (cluster.readAccess === 'public') {
+        // Public access - no auth required
+        req.cluster = cluster;
+        return next();
+      } else if (cluster.readAccess === 'authenticated' && req.userId) {
+        // Authenticated access - user must be logged in
+        req.cluster = cluster;
+        return next();
+      } else if (cluster.readAccess === 'private') {
+        // Private access - only owner
+        return res.status(403).json({ error: 'Access denied to this cluster' });
       }
     }
 
-    // Attach cluster to request
-    req.cluster = cluster;
-    next();
+    // Check write access
+    if (isWriteOperation) {
+      if (cluster.writeAccess === 'public') {
+        // Public write access
+        req.cluster = cluster;
+        return next();
+      } else if (cluster.writeAccess === 'authenticated' && req.userId) {
+        // Authenticated write access
+        req.cluster = cluster;
+        return next();
+      } else if (cluster.writeAccess === 'private') {
+        // Private write access - only owner
+        return res.status(403).json({ error: 'Write access denied' });
+      }
+    }
+
+    // Default: deny access
+    return res.status(403).json({ error: 'Access denied to this cluster' });
   } catch (error) {
     console.error('Cluster access check error:', error);
     res.status(500).json({ error: 'Server error' });

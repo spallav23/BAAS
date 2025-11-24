@@ -8,17 +8,21 @@ import {
   FiTrendingUp,
   FiActivity,
   FiArrowRight,
+  FiServer,
 } from 'react-icons/fi'
 import { fetchClusters } from '../../store/slices/clusterSlice'
+import { fetchBuckets } from '../../store/slices/storageSlice'
 import { getCurrentUser } from '../../store/slices/authSlice'
 
 const Dashboard = () => {
   const dispatch = useDispatch()
   const { clusters, isLoading } = useSelector((state) => state.clusters)
+  const { buckets, isLoading: bucketsLoading } = useSelector((state) => state.storage)
   const { user } = useSelector((state) => state.auth)
 
   useEffect(() => {
     dispatch(fetchClusters())
+    dispatch(fetchBuckets())
     dispatch(getCurrentUser())
   }, [dispatch])
 
@@ -64,9 +68,9 @@ const Dashboard = () => {
       change: '+8%',
     },
     {
-      label: 'Active Clusters',
-      value: clusters.filter((c) => c.isActive).length,
-      icon: FiTrendingUp,
+      label: 'Storage Buckets',
+      value: buckets.length,
+      icon: FiServer,
       color: 'accent-purple',
       change: '+5%',
     },

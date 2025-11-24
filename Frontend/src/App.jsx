@@ -13,6 +13,8 @@ import Dashboard from './pages/Dashboard/Dashboard'
 import Clusters from './pages/Clusters/Clusters'
 import ClusterDetail from './pages/Clusters/ClusterDetail'
 import Documents from './pages/Documents/Documents'
+import Buckets from './pages/Storage/Buckets'
+import BucketDetail from './pages/Storage/BucketDetail'
 import Profile from './pages/Profile/Profile'
 
 function App() {
@@ -30,7 +32,8 @@ function App() {
       {/* Public Routes */}
       <Route
         path="/"
-        element={isAuthenticated ? <Navigate to="/dashboard" /> : <Landing />}
+        element={ <Landing />}
+        // element={isAuthenticated ? <Navigate to="/dashboard" /> : <Landing />}
       />
       <Route
         path="/login"
@@ -66,6 +69,8 @@ function App() {
         <Route path="clusters" element={<Clusters />} />
         <Route path="clusters/:clusterId" element={<ClusterDetail />} />
         <Route path="documents" element={<Documents />} />
+        <Route path="storage" element={<Buckets />} />
+        <Route path="storage/buckets/:bucketId" element={<BucketDetail />} />
         <Route path="profile" element={<Profile />} />
       </Route>
 

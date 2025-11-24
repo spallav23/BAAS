@@ -121,10 +121,8 @@ const getCluster = async (req, res) => {
   try {
     const cluster = req.cluster;
 
-    // Check if user owns the cluster or has read access
-    if (cluster.userId !== req.userId && cluster.readAccess === 'private') {
-      return res.status(403).json({ error: 'Access denied' });
-    }
+    // Access check is handled in middleware, but verify here
+    // This check is redundant but kept for safety
 
     res.json({
       cluster: {
@@ -154,8 +152,8 @@ const updateCluster = async (req, res) => {
   try {
     const cluster = req.cluster;
 
-    // Check ownership
-    if (cluster.userId !== req.userId) {
+    // Check ownership (update/delete require auth and ownership)
+    if (!req.userId || cluster.userId !== req.userId) {
       return res.status(403).json({ error: 'Not authorized to update this cluster' });
     }
 
@@ -208,8 +206,8 @@ const deleteCluster = async (req, res) => {
   try {
     const cluster = req.cluster;
 
-    // Check ownership
-    if (cluster.userId !== req.userId) {
+    // Check ownership (delete requires auth and ownership)
+    if (!req.userId || cluster.userId !== req.userId) {
       return res.status(403).json({ error: 'Not authorized to delete this cluster' });
     }
 

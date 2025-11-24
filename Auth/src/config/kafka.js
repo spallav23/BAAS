@@ -7,7 +7,7 @@ let consumer = null;
 const initKafka = () => {
   kafka = new Kafka({
     clientId: process.env.KAFKA_CLIENT_ID || 'auth-service',
-    brokers: (process.env.KAFKA_BROKERS || 'localhost:9092').split(','),
+    brokers: (process.env.KAFKA_BROKERS || 'baas-kafka:9092').split(','),
   });
 
   producer = kafka.producer();

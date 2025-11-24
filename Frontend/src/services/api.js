@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1/api'
 
 // Create axios instance
 const api = axios.create({
@@ -96,6 +96,34 @@ export const dataAPI = {
     api.put(`/db/clusters/${clusterId}/data/${documentId}`, data),
   deleteDocument: (clusterId, documentId) =>
     api.delete(`/db/clusters/${clusterId}/data/${documentId}`),
+}
+
+// Storage API
+export const storageAPI = {
+  // Buckets
+  getBuckets: () => api.get('/storage/buckets'),
+  getBucket: (bucketId) => api.get(`/storage/buckets/${bucketId}`),
+  createBucket: (data) => api.post('/storage/buckets', data),
+  updateBucket: (bucketId, data) => api.put(`/storage/buckets/${bucketId}`, data),
+  deleteBucket: (bucketId) => api.delete(`/storage/buckets/${bucketId}`),
+  
+  // Files
+  getFiles: (bucketId, params) =>
+    api.get(`/storage/buckets/${bucketId}/files`, { params }),
+  getFile: (bucketId, fileId) =>
+    api.get(`/storage/buckets/${bucketId}/files/${fileId}`),
+  uploadFile: (bucketId, formData) =>
+    api.post(`/storage/buckets/${bucketId}/files`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
+  downloadFile: (bucketId, fileName) =>
+    api.get(`/storage/buckets/${bucketId}/files/${fileName}/download`, {
+      responseType: 'blob',
+    }),
+  deleteFile: (bucketId, fileId) =>
+    api.delete(`/storage/buckets/${bucketId}/files/${fileId}`),
 }
 
 export default api

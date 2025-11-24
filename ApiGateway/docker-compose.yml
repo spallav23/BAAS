@@ -30,4 +30,6 @@ networks:
   baas-network:
     external: true
     name: baas-network
+    driver_opts:
+      com.docker.network.enable_ipv6: "false"
 
