@@ -42,6 +42,7 @@ router.post('/buckets/:bucketId/files', optionalAuthMiddleware, checkBucketAcces
 router.get('/buckets/:bucketId/files', optionalAuthMiddleware, checkBucketAccess, fileController.listFiles);
 router.get('/buckets/:bucketId/files/:fileId', optionalAuthMiddleware, checkBucketAccess, fileController.getFile);
 router.get('/buckets/:bucketId/files/:fileName/download', optionalAuthMiddleware, checkBucketAccess, fileController.downloadFile);
+router.get('/buckets/:bucketId/files/:fileName/open', optionalAuthMiddleware, checkBucketAccess, fileController.openFile);
 router.delete('/buckets/:bucketId/files/:fileId', optionalAuthMiddleware, checkBucketAccess, fileController.deleteFile);
 
 module.exports = router;

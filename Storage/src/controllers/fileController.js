@@ -254,6 +254,54 @@ const downloadFile = async (req, res) => {
   }
 };
 
+//open file
+const openFile = async (req, res) => {
+  try {
+    const bucket = req.bucket;
+    const { fileName } = req.params;
+
+    if (!bucket.apiEnabled) {
+      return res.status(403).json({ error: 'API is disabled for this bucket' });
+    }
+
+    // Find file
+    const file = await File.findOne({ 
+      bucketId: bucket._id,
+      fileName: fileName,
+    });
+
+    if (!file) {
+      return res.status(404).json({ error: 'File not found' });
+    }
+
+    // Access check
+    if (bucket.readAccess === 'private' && (!req.userId || file.userId !== req.userId)) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
+    // File exists
+    if (!await fs.pathExists(file.filePath)) {
+      return res.status(404).json({ error: 'File not found on disk' });
+    }
+
+    // Show file in browser
+    res.setHeader("Content-Type", file.mimeType || "application/octet-stream");
+    
+    // IMPORTANT: show inline instead of forcing download
+    res.setHeader("Content-Disposition", `inline; filename="${file.originalName}"`);
+
+    // Stream file
+    const fileStream = fs.createReadStream(file.filePath);
+    fileStream.pipe(res);
+
+  } catch (error) {
+    console.error("Download file error:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+
+
 // Delete file
 const deleteFile = async (req, res) => {
   try {
@@ -326,5 +374,6 @@ module.exports = {
   getFile,
   downloadFile,
   deleteFile,
+  openFile
 };
 

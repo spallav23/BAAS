@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { FiArrowLeft, FiPlus, FiTrash2, FiDownload, FiFile } from 'react-icons/fi'
+import { FiArrowLeft, FiPlus, FiTrash2, FiDownload, FiFile,FiBookOpen } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
 import { storageAPI } from '../../services/api'
 import toast from 'react-hot-toast'
@@ -76,6 +76,25 @@ const BucketDetail = () => {
       toast.success('File downloaded successfully')
     } catch (error) {
       toast.error('Failed to download file')
+    }
+  }
+  const handleOpen = async (fileName, originalName,fileid) => {
+    try {
+      // console.log(files);
+      const file = files.find((f)=>f._id == fileid);
+      const base = import.meta.env.VITE_API_URL || 'http://10.21.50.228/api'
+      const url = base.replace('/api','') + file.publicUrl.replace('download','open') 
+      const link = document.createElement('a')
+      link.href = url
+      link.target = "_blank";    
+      link.rel = "noopener noreferrer";
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.URL.revokeObjectURL(url)
+      toast.success('File Open successfully')
+    } catch (error) {
+      toast.error('Failed to Open file')
     }
   }
 
@@ -243,6 +262,13 @@ const BucketDetail = () => {
                   </div>
                 </div>
                 <div className="flex gap-2 ml-4">
+                  <button
+                    onClick={() => handleOpen(file.fileName, file.originalName,file._id)}
+                    className="p-2 rounded-lg hover:bg-dark-card transition-colors"
+                    title="Open"
+                  >
+                    <FiBookOpen className="w-4 h-4 text-dark-text-muted hover:text-accent-blue" />
+                  </button>
                   <button
                     onClick={() => handleDownload(file.fileName, file.originalName)}
                     className="p-2 rounded-lg hover:bg-dark-card transition-colors"

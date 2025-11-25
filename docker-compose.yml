@@ -63,7 +63,7 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://baas-kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
@@ -92,14 +92,14 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ""
-      KAFKA_BROKERS: kafka:9092
+      KAFKA_BROKERS: baas-kafka:9092
       KAFKA_CLIENT_ID: auth-service
       KAFKA_GROUP_ID: auth-service-group
       JWT_SECRET: pallav
       JWT_EXPIRES_IN: 24h
       JWT_REFRESH_SECRET: spallav
       JWT_REFRESH_EXPIRES_IN: 7d
-      EMAIL_HOST: mtp.gmail.com
+      EMAIL_HOST: smtp.gmail.com
       EMAIL_PORT: 587
       EMAIL_USER: spp23102003@gmail.com
       EMAIL_PASS: drmb vxgw mwhc nokk
@@ -231,6 +231,8 @@ services:
     container_name: baas-frontend
     ports:
       - "5173:80"
+    environment:
+      VITE_API_URL: http://http://10.21.50.228/api
     depends_on:
       - api-gateway
     networks:

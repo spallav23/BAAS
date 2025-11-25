@@ -93,7 +93,6 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <motion.div
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -101,7 +100,7 @@ const Dashboard = () => {
       >
         <div>
           <h1 className="text-3xl font-bold text-dark-text mb-2">
-            Welcome back, {user?.name || 'User'}! 👋
+            Welcome back, {user?.name || 'User'}! 
           </h1>
           <p className="text-dark-text-muted">
             Manage your databases and clusters from one place
@@ -119,7 +118,6 @@ const Dashboard = () => {
         </Link>
       </motion.div>
 
-      {/* Stats Grid */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
@@ -159,7 +157,6 @@ const Dashboard = () => {
         })}
       </motion.div>
 
-      {/* Recent Clusters */}
       <motion.div
         variants={itemVariants}
         initial="hidden"
