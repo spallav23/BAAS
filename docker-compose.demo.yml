@@ -99,11 +99,11 @@ services:
       JWT_EXPIRES_IN: 24h
       JWT_REFRESH_SECRET: spallav
       JWT_REFRESH_EXPIRES_IN: 7d
-      EMAIL_HOST: smtp.gmail.com
-      EMAIL_PORT: 587
-      EMAIL_USER: spp23102003@gmail.com
-      EMAIL_PASS: drmb vxgw mwhc nokk
-      EMAIL_FROM: noreply@baas-pallav.com
+      EMAIL_HOST: 
+      EMAIL_PORT: 
+      EMAIL_USER: 
+      EMAIL_PASS: 
+      EMAIL_FROM: 
       STORAGE_SERVICE_URL: http://storage-service:3002
       DATABASE_SERVICE_URL: http://database-service:3003
     depends_on:
